@@ -1,0 +1,85 @@
+JENKINS:
+========
+Shared Library:
+---------------
+It is group of groovy code which can be used for re-useability, shared lib can be used by multiple jobs locally in the "folder"
+-> We can implictly load library for all jobs
+--> or we can implictly use for specific jobs
+   @Library('nameoflib') _
+It is more secure as it runs in groovy sandbox
+
+Global Shared Library:
+----------------------
+It is the library which can be used by any job in jenkins globally
+Here also, we can load lib implictly or specify to load in specific job
+It can have security risk as it will not run in groovy sandbox
+
+
+Run jenkins pipeline inside docker container
+--------------------------------------------
+
+###We need to add "docker plugin, docker pipeline"
+--> configure Nodes & cloud --> socket path ///var/run/docker.sock
+
+agent {
+    docker {
+        image 'xxxxxxxxx'
+        label 'xxxxxnode'
+        registryUrl 'xxxxxxxxx.com/'
+        registryCrendialsId: 'xxxxxxx'
+      }
+}
+
+note: we can add "configure cloud--> docker agent template --> specify image
+=======================================================================================================================
+
+Run jenkins pipeline inside pod deployed on kubernetes cluster:
+---------------------------------------------------------------
+
+agent {
+    kubernetes {
+        defaultContainer 'cont_name'
+        yaml '''
+kind: Pod
+metadata:
+   name: xxx
+   labels:
+      xxx: xxxxxx
+spec:
+  containers:
+    - name: xxxxx
+      image: xxxxx
+      ports:
+      - containerPort: 80
+      command: ['sh', '-c', 'sleep']
+      args:
+      - 99d
+      volumeMounts:
+      - name: vol1
+        mountPath: /xx/xxx1
+       - name: vol2
+        mountPath: /xx/xxx2
+   volumes:
+   - name: vol1
+     secrets:
+       secretName: xxxxx
+   - name: vol2
+     configMap:
+       name: xxxx
+'''
+}
+
+
+=======================================================================================================================================
+
+Run pipeline in customWorkspace:
+---------------------------------
+
+agent {
+    node {
+       label 'xxxxnode'
+       customWorkspace: '/xxx/xxx'
+    }
+}
+
+   
